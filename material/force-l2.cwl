@@ -1,4 +1,4 @@
-cwlVersion: v1.2
+cwlVersion: v1.0
 $namespaces:
   s: https://schema.org/
 s:softwareVersion: 1.0.0
@@ -14,7 +14,6 @@ $graph:
       input:
         type: Directory
         label: Input S2 L1C
-        loadListing: no_listing
       aoi:
         type: string
         label: area of interest as bounding box or polygon WKT
@@ -64,46 +63,46 @@ $graph:
         doc: DEM to be used with topographic correction
         default: Copernicus_90m
       do_atmo:
-        type: bool
+        type: boolean
         label: atmospheric correction
         doc: whether to apply AC or to pass through the L1C
         default: true
       do_topo:
-        type: bool
+        type: boolean
         label: topographic correction
         doc: whether to apply topographic correction
         default: true
       do_brdf:
-        type: bool
+        type: boolean
         label: brdf correction
         doc: whether to apply BRDF
         default: true
       do_adjacency:
-        type: bool
+        type: boolean
         label: adjacency effect correction
         doc: whether to apply adjacency effect correction
         default: true
       do_multi_scattering:
-        type: bool
+        type: boolean
         label: multiple scattering
         doc: whether to apply multiple scattering or single scattering in radiative transfer calculations
         default: true
       do_aod:
-        type: bool
+        type: boolean
         label: estimate AOD
         doc: whether to estimate AOD
         default: true
       erase_clouds:
-        type: bool
+        type: boolean
         label: mask cloud pixels
         doc: set pixels affected by clouds to to nodata
         default: false
-      max_cloud_cover_frame
+      max_cloud_cover_frame:
         type: float
         label: cloud cover threshold
         doc: drop inputs with cloud cover larger than threshold
         default: 99
-      max_cloud_cover_tile
+      max_cloud_cover_tile:
         type: float
         label: cloud cover threshold
         doc: drop output tiles with cloud cover larger than threshold
@@ -150,12 +149,12 @@ $graph:
         doc: method to improve resolution to 10m
         default: IMPROPHE
       impulse_noise:
-        type: bool
+        type: boolean
         label: remove impulse noise
         doc: whether to remove impulse noise from 8-bit data variables
         default: true
       buffer_nodata:
-        type: bool
+        type: boolean
         label: buffer nodata pixels
         doc: whether to buffer nodata pixels by 1 pixel
         default: false
@@ -170,7 +169,7 @@ $graph:
         doc: number of threads per process
         default: 4
       parallel_reads:
-        type: bool
+        type: boolean
         label: use parallel reads
         doc: read different variables of a single input concurrently (if the driver does not do so anyway)
         default: false
@@ -190,43 +189,43 @@ $graph:
           symbols:
             - GTiff
             - COG
-         label: output format
-         doc: output file format
-         default: GTiff
+        label: output format
+        doc: output file format
+        default: GTiff
       output_dst:
-        type: bool
+        type: boolean
         label: output distance to cloud
         doc: whether to output DST
         default: false
       output_aod:
-        type: bool
+        type: boolean
         label: output atmospheric optical depth
         doc: whether to output AOD
         default: false
       output_wvp:
-        type: bool
+        type: boolean
         label: output water vapour
         doc: whether to output WVP
         default: false
       output_vzn:
-        type: bool
+        type: boolean
         label: output view zenith angles
         doc: whether to output VZN
         default: false
       output_hot:
-        type: bool
+        type: boolean
         label: output haze optimised transformation output
         doc: whether to output HOT
         default: false
       output_ovv:
-        type: bool
+        type: boolean
         label: output cloud mask quicklook
         doc: whether to output an overview image
         default: true
     outputs:
-      - id: stac_catalog
+      - id: force_l2_ard
         outputSource:
-          - run_script/force-level2_wrapper
+          - run_script/force_l2_ard
         type: Directory
 
     steps:
@@ -270,15 +269,13 @@ $graph:
           output_hot: output_hot
           output_ovv: output_ovv
         out:
-          - force_ard
+          - force_l2_ard
 
   - class: CommandLineTool
     id: force-level2-wrapper
     requirements:
       DockerRequirement:
-        dockerPull: quay.io/bcdev/force-openeo:1.0
-      NetworkAccess:
-        networkAccess: true
+        dockerPull: davidfrantz:force
 
     baseCommand:
       - force-level2-wrapper.sh
@@ -288,7 +285,7 @@ $graph:
         inputBinding:
           position: 1
       aoi:
-        type: str
+        type: string
         inputBinding:
           prefix: --aoi
       resolution:
@@ -322,38 +319,38 @@ $graph:
         inputBinding:
           prefix: --dem
       do_atmo:
-        type: bool
+        type: boolean
         inputBinding:
           prefix: --do_atmo
       do_topo:
-        type: bool
+        type: boolean
         inputBinding:
           prefix: --do_topo
       do_brdf:
-        type: bool
+        type: boolean
         inputBinding:
           prefix: --do_brdf
       do_adjacency:
-        type: bool
+        type: boolean
         inputBinding:
           prefix: --do_adjacency
       do_multi_scattering:
-        type: bool
+        type: boolean
         inputBinding:
           prefix: --do_multi_scattering
       do_aod:
-        type: bool
+        type: boolean
         inputBinding:
           prefix: --do_aod
       erase_clouds:
-        type: bool
+        type: boolean
         inputBinding:
           prefix: --erase_clouds
-      max_cloud_cover_frame
+      max_cloud_cover_frame:
         type: float
         inputBinding:
-          prefix: - max_cloud_cover_frame
-      max_cloud_cover_tile
+          prefix: --max_cloud_cover_frame
+      max_cloud_cover_tile:
         type: float
         inputBinding:
           prefix: --max_cloud_cover_tile
@@ -392,11 +389,11 @@ $graph:
         inputBinding:
           prefix: --res_merge
       impulse_noise:
-        type: bool
+        type: boolean
         inputBinding:
           prefix: --impulse_noise
       buffer_nodata:
-        type: bool
+        type: boolean
         inputBinding:
           prefix: --buffer_nodata
       nproc:
@@ -408,7 +405,7 @@ $graph:
         inputBinding:
           prefix: --nthread
       parallel_reads:
-        type: bool
+        type: boolean
         inputBinding:
           prefix: --parallel_reads
       process_start_delay:
@@ -428,27 +425,27 @@ $graph:
         inputBinding:
           prefix: --output_format
       output_dst:
-        type: bool
+        type: boolean
         inputBinding:
           prefix: --output_dst
       output_aod:
-        type: bool
+        type: boolean
         inputBinding:
           prefix: --output_aod
       output_wvp:
-        type: bool
+        type: boolean
         inputBinding:
           prefix: --output_wvp
       output_vzn:
-        type: bool
+        type: boolean
         inputBinding:
           prefix: --output_vzn
       output_hot:
-        type: bool
+        type: boolean
         inputBinding:
           prefix: --output_hot
       output_ovv:
-        type: bool
+        type: boolean
         inputBinding:
           prefix: --output_ovv
 

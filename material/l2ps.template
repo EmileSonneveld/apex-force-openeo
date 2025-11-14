@@ -7,7 +7,7 @@
 # into the parameter file. The file queue is mandatory for force-level2, but
 # may be NULL for force-l2ps.
 # Type: full file path
-FILE_QUEUE = inputs/tds.txt
+FILE_QUEUE = /data/inputs/tds.txt
 # This is the output directory where the Level 2 data will be stored. Note
 # that data will be overwritten/mosaicked if you reprocess images. It is
 # safe and recommended to use a single Level 2 data pool for different
@@ -15,13 +15,13 @@ FILE_QUEUE = inputs/tds.txt
 # programs of FORCE can handle different spatial resolutions (e.g. 30m
 # Landsat and 10m Sentinel-2).
 # Type: full directory path
-DIR_LEVEL2 = outputs
+DIR_LEVEL2 = /data/outputs
 # This is the directory where logfiles should be saved.
 # Type: full directory path
-DIR_LOG = log
+DIR_LOG = /data/log
 # This is the directory where provenance files should be saved.
 # Type: full directory path
-DIR_PROVENANCE = provenance
+DIR_PROVENANCE = /data/provenance
 # This is a temporary directory that is used to extract compressed images
 # for force-level2. Note that images already need to be extracted when using
 # force-l2ps directly. The extracted data will be deleted once they were
@@ -31,7 +31,7 @@ DIR_PROVENANCE = provenance
 # level2 is running. Note that the effect is not immediate, as the load is
 # only adjusted after one of the running jobs (images) is finished. 
 # Type: full directory path
-DIR_TEMP = temp
+DIR_TEMP = /data/temp
 
 # MASKING
 # ------------------------------------------------------------------------

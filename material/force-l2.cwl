@@ -13,7 +13,7 @@ class: CommandLineTool
 requirements:
   DockerRequirement:
     # Copernicus registery for testing. quay.io/bcdev is also accessible
-    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/force-eoap:0.0.3
+    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/force-eoap:0.0.4
 #    dockerImageId: quay.io/bcdev/force-eoap:0.0.2
   NetworkAccess:
      networkAccess: true

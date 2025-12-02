@@ -7,7 +7,7 @@ cwlVersion: v1.2
 # export AWS_ENDPOINT_URL_S3='https://eodata.dataspace.copernicus.eu'
 # export AWS_ACCESS_KEY_ID=...
 # export AWS_SECRET_ACCESS_KEY=...
-# cwltool --preserve-environment=AWS_ENDPOINT_URL_S3 --preserve-environment=AWS_ACCESS_KEY_ID --preserve-environment=AWS_SECRET_ACCESS_KEY --force-docker-pull --tmpdir-prefix=$HOME/tmp/ material/force-l2.cwl
+# cwltool --preserve-environment=AWS_ENDPOINT_URL_S3 --preserve-environment=AWS_ACCESS_KEY_ID --preserve-environment=AWS_SECRET_ACCESS_KEY --force-docker-pull --leave-container --leave-tmpdir --tmpdir-prefix=$HOME/tmp/ material/force-l2.cwl
 
 class: CommandLineTool
 requirements:
@@ -201,10 +201,10 @@ inputs:
 
 outputs:
   ## Alternative with a flat file list, breaks structure
-  force_level2_ard:
-    type: File[]
-    outputBinding:
-      glob: ["*.json", "CITEME*.txt", "*/datacube-definition.prj", "*/*/*tif", "*/*/*jpg"]
+  #force_level2_ard:
+  #  type: File[]
+  #  outputBinding:
+  #    glob: ["*.json", "CITEME*.txt", "*/datacube-definition.prj", "*/*/*tif", "*/*/*jpg"]
   ## Alternative with subdirectory with generated name
   #force_level2_ard1:
   #   type: Directory
@@ -220,7 +220,7 @@ outputs:
   #   outputBinding:
   #     glob: ["*.json", "CITEME*.txt" ]
   # Alternative with a predictable directory name "l2-ard"
-#  force_level2_ard:
-#     type: Directory
-#     outputBinding:
-#       glob: "l2-ard"
+  force_level2_ard:
+     type: Directory
+     outputBinding:
+       glob: "l2-ard"

@@ -50,14 +50,14 @@
     "processing:facility": "BC",
     "product:type": "FORCE_L2_ARD",
     "gsd": 10,
-    "grid:code": "GLANCE7",
+    "grid:code": "GLANCE7"
   },
   "links": [
     {
       "rel": "self",
       "type": "application/geo+json",
-      "href": "file://${processing_name}-l2-ard.json"
+      "href": "file://${processing_name}-l2-ard.json",
       "comment-href": "https://openeo.dataspace.copernicus.eu/home/user/${processing_name}-l2-ard.json"
     }  
-  }
+  ],
   "assets": {

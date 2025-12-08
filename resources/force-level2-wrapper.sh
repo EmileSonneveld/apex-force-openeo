@@ -7,9 +7,14 @@ set -x
 # old: The last parameter is the input directory with catalogue.json with the URLs of inputs.
 # new: Parameters are passed as --key value arguments. Inputs are passed as positional parameters. There is no input directory any more.
 # new: The tmp directory shall be used for all intermediates. The working directory shall be used for the output.
-# new: environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are provided by the caller
+# new: environment variables AWS_ENDPOINT_URL_S3, AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are provided by the caller
 
-s3_host=eodata.dataspace.copernicus.eu
+if [ -z "${AWS_ENDPOINT_URL_S3-}" ]; then
+  export AWS_ENDPOINT_URL_S3='https://eodata.dataspace.copernicus.eu'
+	echo "Environmental variables AWS_ENDPOINT_URL_S3 not defined. Using default: $AWS_ENDPOINT_URL_S3"
+fi
+# for f5cmd:
+export S3_ENDPOINT_URL=$AWS_ENDPOINT_URL_S3
 
 #input_catalogue_dir=${@:$#}
 #
@@ -99,8 +104,8 @@ for safeurl in $inputs; do
     # s3://EODATA/Sentinel-2/MSI/L1C/2024/11/13/S2A_MSIL1C_20241113T101251_N0511_R022_T32TPQ_20241113T121135.SAFE
     if [ ! -e inputs/$(basename $safeurl) ]; then
         echo staging $(basename $safeurl)
-        #s3cmd --host $s3_host get -r $safeurl inputs
-        s5cmd --endpoint-url=https://$s3_host cp $safeurl* inputs
+        #s3cmd get -r $safeurl inputs
+        s5cmd cp $safeurl* inputs
 
     else
         echo $(basename $safeurl) already available

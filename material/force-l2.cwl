@@ -4,14 +4,16 @@ cwlVersion: v1.2
 # ssh yarn@archive03
 # cd integration/force/test3
 # . /home/yarn/opt/miniconda-cwltool/bin/activate
+# export AWS_ENDPOINT_URL_S3='https://eodata.dataspace.copernicus.eu'
 # export AWS_ACCESS_KEY_ID=...
 # export AWS_SECRET_ACCESS_KEY=...
-# cwltool --preserve-environment=AWS_ACCESS_KEY_ID --preserve-environment=AWS_SECRET_ACCESS_KEY --tmpdir-prefix=/home/yarn/integration/force/tmp/ /home/yarn/integration/force/apex-force-openeo/material/force-l2.cwl
+# cwltool --preserve-environment=AWS_ENDPOINT_URL_S3 --preserve-environment=AWS_ACCESS_KEY_ID --preserve-environment=AWS_SECRET_ACCESS_KEY --force-docker-pull --leave-container --leave-tmpdir --tmpdir-prefix=$HOME/tmp/ material/force-l2.cwl
 
 class: CommandLineTool
 requirements:
   DockerRequirement:
-    dockerPull: quay.io/bcdev/force-eoap:0.0.2
+    # Copernicus registery for testing. quay.io/bcdev is also accessible
+    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/force-eoap:0.0.4
 #    dockerImageId: quay.io/bcdev/force-eoap:0.0.2
   NetworkAccess:
      networkAccess: true

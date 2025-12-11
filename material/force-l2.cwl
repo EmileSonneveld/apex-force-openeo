@@ -12,9 +12,9 @@ cwlVersion: v1.2
 class: CommandLineTool
 requirements:
   DockerRequirement:
-    # Copernicus registery for testing. quay.io/bcdev is also accessible
-    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/force-eoap:0.0.4
-#    dockerImageId: quay.io/bcdev/force-eoap:0.0.2
+#    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/force-eoap:0.0.4
+#    dockerPull: quay.io/bcdev/force-eoap:0.0.5
+    dockerImageId: quay.io/bcdev/force-eoap:0.0.5
   NetworkAccess:
      networkAccess: true
 baseCommand: /opt/apex-force-wrapper/bin/force-level2-wrapper.sh
@@ -25,8 +25,8 @@ inputs:
       position: 1
     default:
       - "s3://EODATA/Sentinel-2/MSI/L1C/2024/11/13/S2A_MSIL1C_20241113T101251_N0511_R022_T32TPQ_20241113T121135.SAFE"
-      - "s3://EODATA/Sentinel-2/MSI/L1C/2024/12/28/S2B_MSIL1C_20241228T101339_N0511_R022_T32TPQ_20241228T120532.SAFE"
-      - "s3://EODATA/Sentinel-2/MSI/L1C/2024/12/28/S2B_MSIL1C_20241228T101339_N0511_R022_T32TQQ_20241228T120532.SAFE"
+#      - "s3://EODATA/Sentinel-2/MSI/L1C/2024/12/28/S2B_MSIL1C_20241228T101339_N0511_R022_T32TPQ_20241228T120532.SAFE"
+#      - "s3://EODATA/Sentinel-2/MSI/L1C/2024/12/28/S2B_MSIL1C_20241228T101339_N0511_R022_T32TQQ_20241228T120532.SAFE"
   aoi:
     type: string?
     inputBinding:

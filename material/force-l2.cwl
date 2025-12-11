@@ -12,9 +12,7 @@ cwlVersion: v1.2
 class: CommandLineTool
 requirements:
   DockerRequirement:
-    # Copernicus registery for testing. quay.io/bcdev is also accessible
-    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/force-eoap:0.0.4
-#    dockerImageId: quay.io/bcdev/force-eoap:0.0.2
+    dockerPull: quay.io/bcdev/force-eoap:0.0.5
   NetworkAccess:
      networkAccess: true
 baseCommand: /opt/apex-force-wrapper/bin/force-level2-wrapper.sh

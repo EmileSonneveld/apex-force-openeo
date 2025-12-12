@@ -166,6 +166,7 @@ for continent_prj_path in $(cd outputs/l2-ard; ls */datacube-definition.prj); do
             cat /opt/apex-force-wrapper/etc/output-item-ovv-asset.template | envsubst >> outputs/l2-ard/$processing_name-l2-ard.json
         done
     done
+    export id=datacube-definition.prj
     export continent_prj_path
     export title="$continent_dir projection"
     cat /opt/apex-force-wrapper/etc/output-item-continent.template | envsubst >> outputs/l2-ard/$processing_name-l2-ard.json

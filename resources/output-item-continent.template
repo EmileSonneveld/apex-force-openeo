@@ -1,5 +1,5 @@
     "${id}": {
-      "href": "${prj_path}",
+      "href": "${continent_prj_path}",
       "type": "text",
       "file:size": ${size},
       "file:checksum": "$md5sum",

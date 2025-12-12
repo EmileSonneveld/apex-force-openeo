@@ -1,13 +1,5 @@
     "${id}": {
       "href": "${qai_path}",
-      "bands": [
-        {
-          "eo:center_wavelength": 0.493,
-          "eo:full_width_half_max": 0.065,
-          "name": "QAI",
-          "eo:common_name": "Quality assurance information"
-        }
-      ],
       "type": "image/tif",
       "file:size": ${size},
       "file:checksum": "$md5sum",

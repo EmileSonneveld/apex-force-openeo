@@ -34,7 +34,6 @@
       ]
     ]
   },
-  "collection": "force-level2",
   "properties": {
     "datetime": "2024-11-13T10:12:51.024Z",
     "start_datetime": "2024-11-13T10:12:51.024Z",
@@ -50,7 +49,7 @@
     "processing:facility": "BC",
     "product:type": "FORCE_L2_ARD",
     "gsd": 10,
-    "grid:code": "GLANCE7"
+    "grid:code": "FORCE-GLANCE7"
   },
   "links": [
     {

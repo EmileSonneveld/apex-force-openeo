@@ -1,13 +1,5 @@
     "${id}": {
       "href": "${ovv_path}",
-      "bands": [
-        {
-          "eo:center_wavelength": 0.493,
-          "eo:full_width_half_max": 0.065,
-          "name": "OVV",
-          "eo:common_name": "Overview quicklook"
-        }
-      ],
       "type": "image/jpg",
       "file:size": ${size},
       "file:checksum": "$md5sum",

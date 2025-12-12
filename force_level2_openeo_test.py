@@ -15,6 +15,6 @@ datacube = connection.datacube_from_process(
     stac_root="catalogue.json",
 )
 
-job = datacube.create_job()
+job = datacube.create_job(title=__file__)
 job.start_and_wait()
 results = job.get_results()

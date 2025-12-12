@@ -13,8 +13,8 @@ class: CommandLineTool
 requirements:
   DockerRequirement:
 #    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/force-eoap:0.0.7
-#    dockerPull: quay.io/bcdev/force-eoap:0.0.7
-    dockerImageId: quay.io/bcdev/force-eoap:0.0.7
+    dockerPull: quay.io/bcdev/force-eoap:0.0.7
+#    dockerImageId: quay.io/bcdev/force-eoap:0.0.7
   NetworkAccess:
      networkAccess: true
 baseCommand: /opt/apex-force-wrapper/bin/force-level2-wrapper.sh

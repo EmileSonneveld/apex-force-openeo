@@ -1,7 +1,7 @@
 import openeo
 
-# url = "https://openeo.dataspace.copernicus.eu"
-url = "https://openeo-staging.dataspace.copernicus.eu/"
+url = "https://openeo.dataspace.copernicus.eu"
+# url = "https://openeo-staging.dataspace.copernicus.eu/"
 connection = openeo.connect(url).authenticate_oidc()
 
 # datacube = connection.datacube_from_process(

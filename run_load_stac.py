@@ -1,19 +1,24 @@
 from pathlib import Path
-
+import os
 import openeo
 
-# Run the CWL first to create the stac catalog!
+stac_root = Path("l2-ard/catalogue.json").absolute()
+if not stac_root.exists():
+    # Run the CWL first to create the stac catalog!
+    os.system(
+        "cwltool --preserve-environment=AWS_ENDPOINT_URL_S3 --preserve-environment=AWS_ACCESS_KEY_ID --preserve-environment=AWS_SECRET_ACCESS_KEY --force-docker-pull --leave-container --leave-tmpdir --tmpdir-prefix=$HOME/tmp/ material/force-l2.cwl"
+    )
 
-# stac_root = Path("/home/emile/openeo/apex-force-openeo/l2-ard/catalogue.json").absolute()
-stac_root = Path("/home/emile/openeo/VITO/VITO2025/brockmann/l2-ard/bologna-l2-ard.json").absolute()
+from pystac import Catalog
+
+validations = Catalog.from_file(str(stac_root)).validate_all()
+assert validations > 0
+
 
 datacube = openeo.DataCube.load_stac(
     url=str(stac_root),
     spatial_extent={"west": 10.25, "south": 44.13, "east": 11.67, "north": 45.15},
 )
-
-# from pystac import Catalog
-# print(Catalog.from_file(stac_root).validate_all())
 
 tmp_dir = Path(".").absolute() / "tmp"
 tmp_dir.mkdir(exist_ok=True)

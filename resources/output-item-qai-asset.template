@@ -1,6 +1,6 @@
     "${id}": {
       "href": "${qai_path}",
-      "type": "image/tif",
+      "type": "image/tiff",
       "file:size": ${size},
       "file:checksum": "$md5sum",
       "file:local_path": "$qai_path",

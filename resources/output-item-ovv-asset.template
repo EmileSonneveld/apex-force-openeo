@@ -1,6 +1,6 @@
     "${id}": {
       "href": "${ovv_path}",
-      "type": "image/jpg",
+      "type": "image/jpeg",
       "file:size": ${size},
       "file:checksum": "$md5sum",
       "file:local_path": "$ovv_path",

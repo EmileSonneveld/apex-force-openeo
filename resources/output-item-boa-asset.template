@@ -62,7 +62,7 @@
           "eo:common_name": "swir22"
         }
       ],
-      "type": "image/tif",
+      "type": "image/tiff",
       "file:size": ${size},
       "file:checksum": "$md5sum",
       "file:local_path": "$boa_path",

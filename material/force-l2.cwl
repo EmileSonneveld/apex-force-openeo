@@ -17,6 +17,11 @@ requirements:
 #    dockerImageId: quay.io/bcdev/force-eoap:0.0.7
   NetworkAccess:
      networkAccess: true
+  ResourceRequirement:
+    ramMin: 8192
+    ramMax: 8192
+    coresMin: 1
+    coresMax: 4
 baseCommand: /opt/apex-force-wrapper/bin/force-level2-wrapper.sh
 inputs:
   input:

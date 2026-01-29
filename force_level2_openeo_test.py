@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import openeo
 
 url = "https://openeo.dataspace.copernicus.eu"
@@ -8,11 +10,13 @@ connection = openeo.connect(url).authenticate_oidc()
 #     process_id="force_level2",
 # )
 
+cwl = Path("material/force-l2.cwl").read_text()
 datacube = connection.datacube_from_process(
-    process_id="run_cwl",
-    cwl_url="https://raw.githubusercontent.com/EmileSonneveld/apex-force-openeo/refs/heads/main/material/force-l2.cwl",
+    "run_udf",
+    data=None,
+    udf=cwl,
+    runtime="EOAP-CWL",
     context={},
-    stac_root="catalogue.json",
 )
 
 job = datacube.create_job(title=__file__)

@@ -7,7 +7,7 @@
 # into the parameter file. The file queue is mandatory for force-level2, but
 # may be NULL for force-l2ps.
 # Type: full file path
-FILE_QUEUE = ${PWD}/inputs/tds.txt
+FILE_QUEUE = ${outputs_dir}/inputs/tds.txt
 # This is the output directory where the Level 2 data will be stored. Note
 # that data will be overwritten/mosaicked if you reprocess images. It is
 # safe and recommended to use a single Level 2 data pool for different
@@ -15,13 +15,13 @@ FILE_QUEUE = ${PWD}/inputs/tds.txt
 # programs of FORCE can handle different spatial resolutions (e.g. 30m
 # Landsat and 10m Sentinel-2).
 # Type: full directory path
-DIR_LEVEL2 = ${PWD}/outputs/l2-ard
+DIR_LEVEL2 = ${outputs_dir}/l2-ard
 # This is the directory where logfiles should be saved.
 # Type: full directory path
-DIR_LOG = ${PWD}/log
+DIR_LOG = ${outputs_dir}/log
 # This is the directory where provenance files should be saved.
 # Type: full directory path
-DIR_PROVENANCE = ${PWD}/provenance
+DIR_PROVENANCE = ${outputs_dir}/provenance
 # This is a temporary directory that is used to extract compressed images
 # for force-level2. Note that images already need to be extracted when using
 # force-l2ps directly. The extracted data will be deleted once they were
@@ -41,6 +41,8 @@ DIR_TEMP = /tmp
 # Type: full file path
 FILE_AOI = ${aoi}
 
+DEM_RESAMPLING = BL
+
 # DIGITAL ELEVATION MODEL
 # ------------------------------------------------------------------------
 # This file specifies the DEM. It is highly recommended to use a DEM. It is
@@ -54,6 +56,7 @@ FILE_AOI = ${aoi}
 # a DEM.
 # Type: full file path
 FILE_DEM = ${dem}
+USE_DEM_DATABASE = FALSE
 # Nodata value of the DEM.
 # Type: Integer. Valid range: [-32768,32767]
 DEM_NODATA = -32767
@@ -82,7 +85,7 @@ FILE_TILE = NULL
 # This is the tile size (in target units, commonly in meters) of the 
 # gridded output. tiles are square; not used if DO_TILE = FALSE. 
 # Type: Double. Valid range: ]0,...
-TILE_SIZE = 30000
+TILE_SIZE = 30000 30000
 # This is the block size (in target units, commonly in meters) of the 
 # image chips. Blocks are stripes, i.e. they are as wide as the tile,
 # and as high as specified here; not used if DO_TILE = FALSE or 

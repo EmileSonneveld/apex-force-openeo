@@ -14,7 +14,9 @@ if [ -z "${AWS_ENDPOINT_URL_S3-}" ]; then
 fi
 # for f5cmd:
 export S3_ENDPOINT_URL=$AWS_ENDPOINT_URL_S3
-
+if [ -z "${AWS_ACCESS_KEY_ID-}" ] || [ -z "${AWS_SECRET_ACCESS_KEY-}" ]; then
+	echo 'Environmental variables AWS_ACCESS_KEY_ID and/or AWS_SECRET_ACCESS_KEY not defined. For more info visit: https://eodata-s3keysmanager.dataspace.copernicus.eu/' && exit 6
+fi
 #input_catalogue_dir=${@:$#}
 #
 #mkdir -p inputs
@@ -98,41 +100,41 @@ done
 
 #ln -s $(pwd) /tmp/outputs
 cd /tmp
+export outputs_dir=/tmp/outputs
 
 # retrieve inputs
 
-mkdir -p inputs
-rm -f inputs/tds.txt
-touch inputs/tds.txt
+mkdir -p $outputs_dir/inputs
+rm -f $outputs_dir/inputs/tds.txt
+touch $outputs_dir/inputs/tds.txt
+export FILE_QUEUE=$outputs_dir/inputs/tds.txt
 
 for safeurl in $inputs; do
     # s3://EODATA/Sentinel-2/MSI/L1C/2024/11/13/S2A_MSIL1C_20241113T101251_N0511_R022_T32TPQ_20241113T121135.SAFE
-    if [ ! -e inputs/$(basename $safeurl) ]; then
+    if [ ! -e $outputs_dir/inputs/$(basename $safeurl) ]; then
         echo staging $(basename $safeurl)
         #s3cmd get -r $safeurl inputs
-        s5cmd cp $safeurl* inputs
-
+        s5cmd cp $safeurl* $outputs_dir/inputs
     else
         echo $(basename $safeurl) already available
     fi
-    echo ${PWD}/inputs/$(basename $safeurl) QUEUED >> inputs/tds.txt
+    echo $outputs_dir/inputs/$(basename "$safeurl") QUEUED >> $outputs_dir/inputs/tds.txt
 done
 
 # create parameter file
 
-mkdir -p param
-cat "$resources/l2ps.template" | envsubst > param/l2ps.prm
-cat param/l2ps.prm
+mkdir -p $outputs_dir/param
+cat "$resources/l2ps.template" | envsubst > $outputs_dir/param/l2ps.prm
+#cat $outputs_dir/param/l2ps.prm
 # call of force-level2
 
-mkdir -p outputs/l2-ard log provenance temp
+mkdir -p $outputs_dir/l2-ard $outputs_dir/log $outputs_dir/provenance
 
-# docker run -i -t -v `pwd`:/data -w /data --user "$(id -u):$(id -g)" --rm davidfrantz/force bash -c "force-level2 param/l2ps.prm"
-if [ ! -e outputs/l2-ard/CITEME* ]; then
-    set -euxo pipefail
-    script -q -e /dev/stdout -c "force-level2 param/l2ps.prm"
+if [ ! -e $outputs_dir/l2-ard/CITEME* ]; then
+    # docker run -i -t -v "$outputs_dir:$outputs_dir" -w $outputs_dir --user "$(id -u):$(id -g)" --rm davidfrantz/force bash -c "force-level2 $outputs_dir/param/l2ps.prm"
+    script -q -e /dev/stdout -c "force-level2 $outputs_dir/param/l2ps.prm"
     # check if "Core processing signaled FAIL" is present in the logs
-    if grep -rq "Core processing signaled FAIL" /tmp/logs; then
+    if grep -rq "Core processing signaled FAIL" $outputs_dir/logs; then
         echo "ERROR: 'Core processing signaled FAIL' found in logs."
         exit 1  # Exit with error code 1
     fi
@@ -140,48 +142,48 @@ fi
 
 # create stac catalogue for output
 
-rm -rf outputs/l2-ard/.parallel
-find outputs/
+rm -rf $outputs_dir/l2-ard/.parallel
+find $outputs_dir/l2-ard
 
 # TODO make parameter processing_name
 export processing_name=bologna
 # CITEME_0x65.txt
-export citeme_path=$(cd outputs/l2-ard; ls CITEME*)
-cat "$resources/output-item-header.template | envsubst > outputs/l2-ard/$processing_name-l2-ard.json"
-for continent_prj_path in $(cd outputs/l2-ard; ls */datacube-definition.prj); do
+export citeme_path=$(cd $outputs_dir/l2-ard; ls CITEME*)
+cat $resources/output-item-header.template | envsubst > $outputs_dir/l2-ard/$processing_name-l2-ard.json
+for continent_prj_path in $(cd $outputs_dir/l2-ard; ls */datacube-definition.prj); do
     # europe
     continent_dir=$(dirname $continent_prj_path)
-    for tile_dir in $(cd outputs/l2-ard; ls -d $continent_dir/X*_Y*); do
-        for boa_path in $(cd outputs/l2-ard; ls $tile_dir/*BOA.tif); do
+    for tile_dir in $(cd $outputs_dir/l2-ard; ls -d $continent_dir/X*_Y*); do
+        for boa_path in $(cd $outputs_dir/l2-ard; ls $tile_dir/*BOA.tif); do
             export boa_path
             export id=$(echo ${boa_path%.tif} | tr '/' '.' )
-            export size=$(ls -l outputs/l2-ard/$boa_path | cut -d ' ' -f 5)
-            export md5sum=$(md5sum outputs/l2-ard/$boa_path | cut -d ' ' -f 1)
+            export size=$(ls -l $outputs_dir/l2-ard/$boa_path | cut -d ' ' -f 5)
+            export md5sum=$(md5sum $outputs_dir/l2-ard/$boa_path | cut -d ' ' -f 1)
             export title="$(echo ${boa_path%.tif} | tr '/' ' ' | tr '_' ' ')"
-            cat "$resources/output-item-boa-asset.template" | envsubst >> "outputs/l2-ard/$processing_name-l2-ard.json"
+            cat "$resources/output-item-boa-asset.template" | envsubst >> "$outputs_dir/l2-ard/$processing_name-l2-ard.json"
         done
-        for qai_path in $(cd outputs/l2-ard; ls $tile_dir/*QAI.tif); do
+        for qai_path in $(cd $outputs_dir/l2-ard; ls $tile_dir/*QAI.tif); do
             export qai_path
             export id=$(echo ${qai_path%.tif} | tr '/' '.' )
-            export size=$(ls -l outputs/l2-ard/$qai_path | cut -d ' ' -f 5)
-            export md5sum=$(md5sum outputs/l2-ard/$qai_path | cut -d ' ' -f 1)
+            export size=$(ls -l $outputs_dir/l2-ard/$qai_path | cut -d ' ' -f 5)
+            export md5sum=$(md5sum $outputs_dir/l2-ard/$qai_path | cut -d ' ' -f 1)
             export title="$(echo ${qai_path%.tif} | tr '/' ' ' | tr '_' ' ')"
-            cat "$resources/output-item-qai-asset.template" | envsubst >> "outputs/l2-ard/$processing_name-l2-ard.json"
+            cat "$resources/output-item-qai-asset.template" | envsubst >> "$outputs_dir/l2-ard/$processing_name-l2-ard.json"
         done
-        for ovv_path in $(cd outputs/l2-ard; ls $tile_dir/*OVV.jpg); do
+        for ovv_path in $(cd $outputs_dir/l2-ard; ls $tile_dir/*OVV.jpg); do
             export ovv_path
             export id=$(echo ${ovv_path%.tif} | tr '/' '.' )
-            export size=$(ls -l outputs/l2-ard/$ovv_path | cut -d ' ' -f 5)
-            export md5sum=$(md5sum outputs/l2-ard/$ovv_path | cut -d ' ' -f 1)
+            export size=$(ls -l $outputs_dir/l2-ard/$ovv_path | cut -d ' ' -f 5)
+            export md5sum=$(md5sum $outputs_dir/l2-ard/$ovv_path | cut -d ' ' -f 1)
             export title="$(echo ${ovv_path%.jpg} | tr '/' ' ' | tr '_' ' ')"
-            cat "$resources/output-item-ovv-asset.template" | envsubst >> "outputs/l2-ard/$processing_name-l2-ard.json"
+            cat "$resources/output-item-ovv-asset.template" | envsubst >> "$outputs_dir/l2-ard/$processing_name-l2-ard.json"
         done
     done
     export id=datacube-definition.prj
     export continent_prj_path
     export title="$continent_dir projection"
-    cat "$resources/output-item-continent.template" | envsubst >> "outputs/l2-ard/$processing_name-l2-ard.json"
+    cat "$resources/output-item-continent.template" | envsubst >> "$outputs_dir/l2-ard/$processing_name-l2-ard.json"
 done
-cat "$resources/output-item-footer.template" | envsubst >> "outputs/l2-ard/$processing_name-l2-ard.json"
+cat "$resources/output-item-footer.template" | envsubst >> "$outputs_dir/l2-ard/$processing_name-l2-ard.json"
 
-cat "$resources/output-catalogue.template" | envsubst > outputs/l2-ard/catalogue.json
+cat "$resources/output-catalogue.template" | envsubst > $outputs_dir/l2-ard/catalogue.json

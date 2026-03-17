@@ -1,5 +1,5 @@
 # build image with
-# docker build -t force-eoap . && docker run -it force-eoap bash
+# docker build -t force-eoap . && docker run -it -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm force-eoap bash
 # /opt/apex-force-wrapper/bin/force-level2-wrapper.sh s3://EODATA/Sentinel-2/MSI/L1C/2024/11/13/S2A_MSIL1C_20241113T101251_N0511_R022_T32TPQ_20241113T121135.SAFE
 # Push to registery that is available in openEO backend:
 # skopeo copy --multi-arch=all --format=oci docker-daemon:quay.io/bcdev/force-eoap:0.0.4 docker://registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/force-eoap:0.0.4

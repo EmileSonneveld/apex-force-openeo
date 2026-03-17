@@ -1,6 +1,5 @@
 #!/bin/bash
-set -e
-set -x
+set -euxo pipefail
 
 # This shell script is called as an entry point into the FORCE wrapper Docker container.
 # old: Parameters and the directory with the catalogue of inputs are passed as command line arguments with --key value syntax.
@@ -77,8 +76,14 @@ export output_vzn=FALSE
 export output_hot=FALSE
 export output_ovv=TRUE
 
+resources="/opt/apex-force-wrapper/etc"
+# if resources does not exist:
+if [ ! -e $resources ]; then
+  resources=$(realpath "$(pwd)")
+fi
+
 inputs=
-while [ "$1" != "" ]; do
+while [ "$#" -gt 0 ]; do
     if [ "${1:0:2}" = "--" ]; then
         declare ${1:2}="$2"
         export ${1:2}
@@ -91,12 +96,12 @@ done
 
 # use /tmp for all intermediates
 
-ln -s $(pwd) /tmp/outputs
+#ln -s $(pwd) /tmp/outputs
 cd /tmp
 
 # retrieve inputs
 
-mkdir inputs
+mkdir -p inputs
 rm -f inputs/tds.txt
 touch inputs/tds.txt
 
@@ -116,15 +121,21 @@ done
 # create parameter file
 
 mkdir -p param
-cat /opt/apex-force-wrapper/etc/l2ps.template | envsubst > param/l2ps.prm
-
+cat "$resources/l2ps.template" | envsubst > param/l2ps.prm
+cat param/l2ps.prm
 # call of force-level2
 
 mkdir -p outputs/l2-ard log provenance temp
 
 # docker run -i -t -v `pwd`:/data -w /data --user "$(id -u):$(id -g)" --rm davidfrantz/force bash -c "force-level2 param/l2ps.prm"
 if [ ! -e outputs/l2-ard/CITEME* ]; then
-    script -q /dev/stdout -c "force-level2 param/l2ps.prm"
+    set -euxo pipefail
+    script -q -e /dev/stdout -c "force-level2 param/l2ps.prm"
+    # check if "Core processing signaled FAIL" is present in the logs
+    if grep -rq "Core processing signaled FAIL" /tmp/logs; then
+        echo "ERROR: 'Core processing signaled FAIL' found in logs."
+        exit 1  # Exit with error code 1
+    fi
 fi
 
 # create stac catalogue for output
@@ -136,7 +147,7 @@ find outputs/
 export processing_name=bologna
 # CITEME_0x65.txt
 export citeme_path=$(cd outputs/l2-ard; ls CITEME*)
-cat /opt/apex-force-wrapper/etc/output-item-header.template | envsubst > outputs/l2-ard/$processing_name-l2-ard.json
+cat "$resources/output-item-header.template | envsubst > outputs/l2-ard/$processing_name-l2-ard.json"
 for continent_prj_path in $(cd outputs/l2-ard; ls */datacube-definition.prj); do
     # europe
     continent_dir=$(dirname $continent_prj_path)
@@ -147,7 +158,7 @@ for continent_prj_path in $(cd outputs/l2-ard; ls */datacube-definition.prj); do
             export size=$(ls -l outputs/l2-ard/$boa_path | cut -d ' ' -f 5)
             export md5sum=$(md5sum outputs/l2-ard/$boa_path | cut -d ' ' -f 1)
             export title="$(echo ${boa_path%.tif} | tr '/' ' ' | tr '_' ' ')"
-            cat /opt/apex-force-wrapper/etc/output-item-boa-asset.template | envsubst >> outputs/l2-ard/$processing_name-l2-ard.json
+            cat "$resources/output-item-boa-asset.template" | envsubst >> "outputs/l2-ard/$processing_name-l2-ard.json"
         done
         for qai_path in $(cd outputs/l2-ard; ls $tile_dir/*QAI.tif); do
             export qai_path
@@ -155,7 +166,7 @@ for continent_prj_path in $(cd outputs/l2-ard; ls */datacube-definition.prj); do
             export size=$(ls -l outputs/l2-ard/$qai_path | cut -d ' ' -f 5)
             export md5sum=$(md5sum outputs/l2-ard/$qai_path | cut -d ' ' -f 1)
             export title="$(echo ${qai_path%.tif} | tr '/' ' ' | tr '_' ' ')"
-            cat /opt/apex-force-wrapper/etc/output-item-qai-asset.template | envsubst >> outputs/l2-ard/$processing_name-l2-ard.json
+            cat "$resources/output-item-qai-asset.template" | envsubst >> "outputs/l2-ard/$processing_name-l2-ard.json"
         done
         for ovv_path in $(cd outputs/l2-ard; ls $tile_dir/*OVV.jpg); do
             export ovv_path
@@ -163,14 +174,14 @@ for continent_prj_path in $(cd outputs/l2-ard; ls */datacube-definition.prj); do
             export size=$(ls -l outputs/l2-ard/$ovv_path | cut -d ' ' -f 5)
             export md5sum=$(md5sum outputs/l2-ard/$ovv_path | cut -d ' ' -f 1)
             export title="$(echo ${ovv_path%.jpg} | tr '/' ' ' | tr '_' ' ')"
-            cat /opt/apex-force-wrapper/etc/output-item-ovv-asset.template | envsubst >> outputs/l2-ard/$processing_name-l2-ard.json
+            cat "$resources/output-item-ovv-asset.template" | envsubst >> "outputs/l2-ard/$processing_name-l2-ard.json"
         done
     done
     export id=datacube-definition.prj
     export continent_prj_path
     export title="$continent_dir projection"
-    cat /opt/apex-force-wrapper/etc/output-item-continent.template | envsubst >> outputs/l2-ard/$processing_name-l2-ard.json
+    cat "$resources/output-item-continent.template" | envsubst >> "outputs/l2-ard/$processing_name-l2-ard.json"
 done
-cat /opt/apex-force-wrapper/etc/output-item-footer.template | envsubst >> outputs/l2-ard/$processing_name-l2-ard.json
+cat "$resources/output-item-footer.template" | envsubst >> "outputs/l2-ard/$processing_name-l2-ard.json"
 
-cat /opt/apex-force-wrapper/etc/output-catalogue.template | envsubst > outputs/l2-ard/catalogue.json
+cat "$resources/output-catalogue.template" | envsubst > outputs/l2-ard/catalogue.json

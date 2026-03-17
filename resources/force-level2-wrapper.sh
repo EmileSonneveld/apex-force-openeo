@@ -97,44 +97,40 @@ while [ "$#" -gt 0 ]; do
 done
 
 # use /tmp for all intermediates
-
-#ln -s $(pwd) /tmp/outputs
-cd /tmp
-export outputs_dir=/tmp/outputs
+outputs_dir="$(pwd)"
 
 # retrieve inputs
-
-mkdir -p $outputs_dir/inputs
-rm -f $outputs_dir/inputs/tds.txt
-touch $outputs_dir/inputs/tds.txt
-export FILE_QUEUE=$outputs_dir/inputs/tds.txt
+mkdir -p /tmp/inputs
+rm -f /tmp/inputs/tds.txt
+touch /tmp/inputs/tds.txt
+export FILE_QUEUE=/tmp/inputs/tds.txt
 
 for safeurl in $inputs; do
     # s3://EODATA/Sentinel-2/MSI/L1C/2024/11/13/S2A_MSIL1C_20241113T101251_N0511_R022_T32TPQ_20241113T121135.SAFE
-    if [ ! -e $outputs_dir/inputs/$(basename $safeurl) ]; then
-        echo staging $(basename $safeurl)
+    basename_url="$(basename "$safeurl")"
+    if [ ! -e "/tmp/inputs/$basename_url" ]; then
+        echo "staging $basename_url"
         #s3cmd get -r $safeurl inputs
-        s5cmd cp $safeurl* $outputs_dir/inputs
+        s5cmd cp $safeurl* /tmp/inputs
     else
-        echo $(basename $safeurl) already available
+        echo "$basename_url already available"
     fi
-    echo $outputs_dir/inputs/$(basename "$safeurl") QUEUED >> $outputs_dir/inputs/tds.txt
+    echo "/tmp/inputs/$basename_url QUEUED" >> /tmp/inputs/tds.txt
 done
 
 # create parameter file
 
-mkdir -p $outputs_dir/param
-cat "$resources/l2ps.template" | envsubst > $outputs_dir/param/l2ps.prm
-#cat $outputs_dir/param/l2ps.prm
+mkdir -p /tmp/param
+cat "$resources/l2ps.template" | envsubst > /tmp/param/l2ps.prm
+#cat /tmp/param/l2ps.prm
 # call of force-level2
 
-mkdir -p $outputs_dir/l2-ard $outputs_dir/log $outputs_dir/provenance
+mkdir -p $outputs_dir/l2-ard /tmp/log /tmp/provenance
 
 if [ ! -e $outputs_dir/l2-ard/CITEME* ]; then
-    # docker run -i -t -v "$outputs_dir:$outputs_dir" -w $outputs_dir --user "$(id -u):$(id -g)" --rm davidfrantz/force bash -c "force-level2 $outputs_dir/param/l2ps.prm"
-    script -q -e /dev/stdout -c "force-level2 $outputs_dir/param/l2ps.prm"
-    # check if "Core processing signaled FAIL" is present in the logs
-    if grep -rq "Core processing signaled FAIL" $outputs_dir/logs; then
+    # docker run -i -t -v "$outputs_dir:$outputs_dir" -w $outputs_dir --user "$(id -u):$(id -g)" --rm davidfrantz/force bash -c "force-level2 /tmp/param/l2ps.prm"
+    script -q -e /dev/stdout -c "force-level2 /tmp/param/l2ps.prm"
+    if grep -rq "Core processing signaled FAIL" /tmp/logs; then
         echo "ERROR: 'Core processing signaled FAIL' found in logs."
         exit 1  # Exit with error code 1
     fi

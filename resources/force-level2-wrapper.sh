@@ -129,7 +129,7 @@ mkdir -p "$outputs_dir/l2-ard" /tmp/log /tmp/provenance
 
 if [ ! -e $outputs_dir/l2-ard/CITEME* ]; then
     # docker run -i -t -v "$outputs_dir:$outputs_dir" -w $outputs_dir --user "$(id -u):$(id -g)" --rm davidfrantz/force bash -c "force-level2 /tmp/param/l2ps.prm"
-    script -q -e /dev/stdout -c "force-level2 /tmp/param/l2ps.prm"
+    force-level2 /tmp/param/l2ps.prm
     if grep -rq "Core processing signaled FAIL" /tmp/logs; then
         echo "ERROR: 'Core processing signaled FAIL' found in logs."
         exit 1  # Exit with error code 1

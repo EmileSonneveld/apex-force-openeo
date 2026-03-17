@@ -13,7 +13,7 @@ class: CommandLineTool
 requirements:
   DockerRequirement:
 #    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/force-eoap:0.0.7
-    dockerPull: ghcr.io/emilesonneveld/emilesonneveld/apex-force-openeo:20260317T1647-emile_main
+    dockerPull: ghcr.io/emilesonneveld/apex-force-openeo:20260317T1719-emile_main
 #    dockerImageId: quay.io/bcdev/force-eoap:0.0.7
   NetworkAccess:
      networkAccess: true

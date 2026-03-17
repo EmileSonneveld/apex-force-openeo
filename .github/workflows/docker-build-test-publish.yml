@@ -36,7 +36,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: OpenEO_Dockerfile
+          file: Dockerfile
           load: true
           tags: ${{ env.IMAGE_NAME }}
           labels: runnumber=${{ github.run_id }}

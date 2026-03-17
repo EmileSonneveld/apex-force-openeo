@@ -97,7 +97,7 @@ while [ "$#" -gt 0 ]; do
 done
 
 # use /tmp for all intermediates
-outputs_dir="$(pwd)"
+export outputs_dir="$(pwd)"
 
 # retrieve inputs
 mkdir -p /tmp/inputs
@@ -125,7 +125,7 @@ cat "$resources/l2ps.template" | envsubst > /tmp/param/l2ps.prm
 #cat /tmp/param/l2ps.prm
 # call of force-level2
 
-mkdir -p $outputs_dir/l2-ard /tmp/log /tmp/provenance
+mkdir -p "$outputs_dir/l2-ard" /tmp/log /tmp/provenance
 
 if [ ! -e $outputs_dir/l2-ard/CITEME* ]; then
     # docker run -i -t -v "$outputs_dir:$outputs_dir" -w $outputs_dir --user "$(id -u):$(id -g)" --rm davidfrantz/force bash -c "force-level2 /tmp/param/l2ps.prm"
@@ -138,8 +138,8 @@ fi
 
 # create stac catalogue for output
 
-rm -rf $outputs_dir/l2-ard/.parallel
-find $outputs_dir/l2-ard
+rm -rf "$outputs_dir/l2-ard/.parallel"
+find "$outputs_dir/l2-ard"
 
 # TODO make parameter processing_name
 export processing_name=bologna

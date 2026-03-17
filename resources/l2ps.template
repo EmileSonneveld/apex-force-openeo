@@ -7,7 +7,7 @@
 # into the parameter file. The file queue is mandatory for force-level2, but
 # may be NULL for force-l2ps.
 # Type: full file path
-FILE_QUEUE = ${outputs_dir}/inputs/tds.txt
+FILE_QUEUE = /tmp/inputs/tds.txt
 # This is the output directory where the Level 2 data will be stored. Note
 # that data will be overwritten/mosaicked if you reprocess images. It is
 # safe and recommended to use a single Level 2 data pool for different
@@ -18,10 +18,10 @@ FILE_QUEUE = ${outputs_dir}/inputs/tds.txt
 DIR_LEVEL2 = ${outputs_dir}/l2-ard
 # This is the directory where logfiles should be saved.
 # Type: full directory path
-DIR_LOG = ${outputs_dir}/log
+DIR_LOG = /tmp/log
 # This is the directory where provenance files should be saved.
 # Type: full directory path
-DIR_PROVENANCE = ${outputs_dir}/provenance
+DIR_PROVENANCE = /tmp/provenance
 # This is a temporary directory that is used to extract compressed images
 # for force-level2. Note that images already need to be extracted when using
 # force-l2ps directly. The extracted data will be deleted once they were

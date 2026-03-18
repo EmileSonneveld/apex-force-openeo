@@ -18,8 +18,8 @@ requirements:
   NetworkAccess:
      networkAccess: true
   ResourceRequirement:
-    ramMin: 7000
-    ramMax: 7000
+    ramMin: 9000
+    ramMax: 9000
     coresMin: 1
     coresMax: 4
 baseCommand: /opt/apex-force-wrapper/bin/force-level2-wrapper.sh
